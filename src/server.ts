@@ -31,15 +31,16 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   //! END @TODO1
   app.get("/filteredimage", async (req, res) =>{
-    let{image_url} = req.query;
+    const {image_url} = req.query;
     if (!image_url){
       return res.status(404).send('Image not found');
     }
-    else {filterImageFromURL(image_url).then((result) => 
-      {res.sendFile(result);
-       res.on("close", () => deleteLocalFiles([result]));
-    }).catch((err) =>res.status(404).send(err))
-    }
+    let imageFile = await
+    filterImageFromURL(image_url);
+      return res.status(200).sendFile(imageFile, () => {
+        deleteLocalFiles([imageFile])
+      });
+    
   });
   
   // Root Endpoint
